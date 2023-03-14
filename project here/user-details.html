@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>user-details.html</title>
+  <style>
+    /*Стилизація проєкта -*/
+    /*     user-details.html - блок з інфою про user зверху сторінки. Кнопка нижчє, на 90% ширини сторінки, по центру.*/
+    /*     блоки з короткою іфною про post - в ряд по 5 .*/
+    /*     Всі елементи котрі характеризують users, posts, comments візуалізувати, так,
+    щоб було видно що це блоки (дати фон. марджини і тд)*/
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #block-A {
+      width: 60%;
+      height: 770px;
+      background: #ffcc9f;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: center;
+    }
+
+    #block-A > div {
+      width: 50%;
+      border: 2px solid black;
+    }
+
+    form {
+      width: 90%;
+    }
+
+    button {
+      width: 100%;
+      height: 50px;
+      margin-top: 20px;
+      display: block;
+      border: 2px solid black;
+    }
+
+    p, ul, li, button {
+      font-size: 20px;
+    }
+
+    p {
+      margin: 10px;
+    }
+
+    ul {
+      margin-left: -10px;
+    }
+
+    #block-B {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+    }
+
+    #block-B > div {
+      width: 19%;
+      height: 70px;
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 2px solid black;
+    }
+
+    a {
+      font-size: 15px;
+      width: 70%;
+      white-space: nowrap;
+      overflow: hidden;
+      padding: 5px;
+      text-overflow: ellipsis;
+    }
+  </style>
+</head>
+<body>
+<div id="block-A"></div>
+<form>
+  <button>post of current user</button>
+</form>
+<div id="block-B"></div>
+<script>
+  // На странице user-details.html:
+  // 4 Вивести всю, без виключення, інформацію про об'єкт user на який клікнули
+  // 5 Додати кнопку "post of current user", при кліку на яку, з'являються title всіх постів поточного юзера
+  // (для получения постов используйте эндпоинт https://jsonplaceholder.typicode.com/users/USER_ID/posts)
+  //     6 Каждому посту додати кнопку/посилання, при кліку на яку відбувається перехід на сторінку post-details.html,
+
+  let locationUrl = new URL(location.href);
+  let id = locationUrl.searchParams.get(`id`);
+  fetch(`https://jsonplaceholder.typicode.com/users/${id}`)
+          .then(value => value.json())
+          .then(user => {
+            for (const info in user) {
+              let userInfo = user[info];
+              let blockA = document.getElementById('block-A');
+              if (typeof userInfo === 'object') {
+                let div = document.createElement('div')
+                let ul = document.createElement('ul');
+                let p = document.createElement('p');
+                p.innerText = `${info}:`;
+                div.append(p, ul)
+                blockA.appendChild(div);
+                for (const i in userInfo) {
+                  let addressCompInf = userInfo[i];
+                  if (typeof addressCompInf === 'object') {
+                    let div = document.createElement('div');
+                    let p = document.createElement('p');
+                    p.innerText = `${i}:`;
+                    let ul = document.createElement('ul');
+                    let ulAddress = blockA.querySelector('ul');
+                    div.append(p, ul);
+                    ulAddress.appendChild(div);
+                    for (const i in addressCompInf) {
+                      let li = document.createElement('li');
+                      li.innerText = `${i} : ${addressCompInf[i]}`
+                      ul.append(li)
+                    }
+                  } else {
+                    let li = document.createElement('li');
+                    li.innerText = `${i} : ${userInfo[i]}`
+                    ul.append(li);
+                  }
+                }
+              } else {
+                let div = document.createElement('div');
+                let p = document.createElement('p');
+                div.appendChild(p);
+                p.innerText = `${info} : ${user[info]}`
+                blockA.appendChild(div);
+              }
+            }
+            let blockB = document.getElementById('block-B');
+            let form = document.querySelector('form')
+            form.onsubmit = function (eo) {
+              eo.preventDefault();
+              fetch(`https://jsonplaceholder.typicode.com/users/${id}/posts`)
+                      .then(value => value.json())
+                      .then(posts => {
+                        for (const post of posts) {
+                          let div = document.createElement('div');
+                          let a = document.createElement('a');
+                          a.innerText = `${post.title}`;
+                          a.href = `post-details.html?id=${post.id}`;
+                          div.appendChild(a);
+                          blockB.appendChild(div);
+                        }
+                      });
+            }
+
+          });
+
+</script>
+</body>
+</html>

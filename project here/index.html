@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>index.html</title>
+  <style>
+    /*Стилизація проєкта -*/
+    /*index.html - всі блоки з user - по 2 в рядок. кнопки/аосилвння розташувати під інформацією про user.*/
+    /*Всі елементи котрі характеризують users, posts, comments візуалізувати, так, щоб було видно що це блоки (дати фон. марджини і тд)*/
+
+    .father {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+    }
+
+    .user {
+      width: 44%;
+      margin: 5px;
+      padding: 15px;
+      border: 4px solid #ffcc9f;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    h2 {
+      width: 100%;
+      display: flex;
+
+    }
+
+    button {
+      width: 30%;
+      height: 25px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 15px;
+      background: bisque;
+
+
+    }
+  </style>
+</head>
+<body>
+<div class="father"></div>
+<script>
+  // В index.html
+  // 1 отримати масив об'єктів з endpoint`а https://jsonplaceholder.typicode.com/users
+  // 2 Вивести id,name всіх user в index.html. Окремий блок для кожного user.
+  // 3 Додати кожному блоку кнопку/посилання , при кліку на яку відбувається перехід  на сторінку user-details.html,
+  // котра має детальну інфорацію про об'єкт на який клікнули
+  fetch('https://jsonplaceholder.typicode.com/users')
+          .then(value => value.json())
+          .then(users => {
+            for (const user of users) {
+              let div = document.createElement('div');
+              div.classList.add('user');
+              let h2 = document.createElement('h2')
+              h2.innerText = `Id:${user.id}
+                                Name:${user.name}`
+              let button = document.createElement('button');
+              button.innerText = 'more';
+              button.addEventListener('click', () => {
+                location.href = `user-details.html?id=${user.id}`
+              });
+              div.append(h2, button)
+              let block = document.body.querySelector('div');
+              block.appendChild(div);
+
+            }
+          })
+</script>
+</body>
+</html>
